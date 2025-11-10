@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
 const authenticateToken = require('./middleware/authMiddleware');
 const app = express();
+const pool = require('./database');
 const port = process.env.PORT ||3100;
 app.use(cors());
 //nst port = 3100;
@@ -29,7 +30,7 @@ let directors = [
 ];
 
 
-app.get('/directors', (req, res) => {
+app.get('/directors', async (req, res) => {
   const sql = "SELECT *FROM directors ORDER BY id ASC ";
   dbDirectors.all(sql, [], (err, rows) => {
     if (err) {
@@ -41,7 +42,7 @@ app.get('/directors', (req, res) => {
 );
 
 //get id
-app.get('/directors/:id', (req, res) => {
+app.get('/directors/:id', async (req, res) => {
   const sql = "SELECT *FROM directors where id = ? ";
   const id = Number(req.params.id);
 
@@ -58,7 +59,7 @@ app.get('/directors/:id', (req, res) => {
   });
 
 
-app.post('/directors',authenticateToken, (req, res) => {
+app.post('/directors',authenticateToken, async(req, res) => {
     const { name , birthYear } = req.body;
     if (!name || !birthYear) {
         return res.status(400).json({ error: 'name dan birthYear wajib diisi' });
@@ -74,7 +75,7 @@ app.post('/directors',authenticateToken, (req, res) => {
 });
 
 //Put movie
-app.put('/directors/:id', (req, res) => {
+app.put('/directors/:id', async (req, res) => {
   const { name, birthYear} = req.body;
   const id = number (req.params.id);
 
@@ -96,7 +97,7 @@ app.put('/directors/:id', (req, res) => {
 
 
 //Delete
-app.delete('/directors/:id', (req,res) => {
+app.delete('/directors/:id', async (req,res) => {
   const sql = 'DELETE FROM directors where id =?';
   const id = Number(req.params.id);
 
@@ -130,7 +131,7 @@ app.get('/status', (req,res) => {
 }
 );
 
-app.post('/auth/register', (req, res) => {
+app.post('/auth/register', async (req, res) => {
   const {username, password} = req.body;
   if(!username || !password || password.length < 6) {
     return res.status(400).json({ error: 'Username dan password (min 6 char) harus diisi'});
@@ -185,7 +186,7 @@ app.post('/auth/register', (req, res) => {
 //     });
 //   });
 
-app.post('/auth/login', (req, res) => {
+app.post('/auth/login', async (req, res) => {
   const {username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json ({error: 'Username dan password harus diisi'});
@@ -401,3 +402,11 @@ app.delete('/directors/:id', (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on localhost: ${port}`);
 }); */
+
+app.get('/profile', authenticateToken, (req, res) => {
+  res.json({
+    message: 'Token Valid', user: req.user.user
+  });
+});
+
+module.exports = app;
