@@ -265,6 +265,10 @@ app.post('/auth/login', async (req, res) => {
 //   });
 // });
 
+app.get('/', (req, res) => {
+  res.send('✅ API is running! Coba akses /status atau /directors');
+});
+
 
 app.use((req, res) => {
   res.status(400).json({error: "Route not found"});
