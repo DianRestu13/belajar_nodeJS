@@ -153,8 +153,6 @@ app.delete('/movies/:id', [authenticateToken, authorizeRole('admin')], async (re
     }
 });
 
-// === DIRECTOR ROUTES (TUGAS PRAKTIKUM) ===
-// (Tambahkan endpoint /directors yang sudah di-refactor di sini)
 
 // === DIRECTOR ROUTES ===
 app.get('/directors', async (req, res, next) => {
